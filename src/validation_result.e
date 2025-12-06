@@ -73,7 +73,6 @@ feature -- Access
 				Result.extend (err.full_message)
 			end
 		ensure
-			result_not_void: Result /= Void
 			same_count: Result.count = errors.count
 		end
 
@@ -131,8 +130,6 @@ feature -- Conversion
 					Result.append (msg)
 				end
 			end
-		ensure
-			result_not_void: Result /= Void
 		end
 
 invariant

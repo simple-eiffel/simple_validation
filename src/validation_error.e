@@ -86,7 +86,6 @@ feature -- Output
 				Result := field_name + ": " + message
 			end
 		ensure
-			result_not_void: Result /= Void
 			result_not_empty: not Result.is_empty
 		end
 

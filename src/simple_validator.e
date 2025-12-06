@@ -258,8 +258,6 @@ feature -- Validation
 					Result.add_error (l_error)
 				end
 			end
-		ensure
-			result_not_void: Result /= Void
 		end
 
 	is_valid (value: detachable ANY): BOOLEAN
