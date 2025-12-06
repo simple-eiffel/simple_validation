@@ -1,30 +1,39 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ljr1981/claude_eiffel_op_docs/main/artwork/LOGO.png" alt="simple_ library logo" width="400">
+</p>
+
 # simple_validation
+
+**[Documentation](https://ljr1981.github.io/simple_validation/)**
 
 Fluent data validation library for Eiffel with chainable rules inspired by HTML5 Constraint Validation API and JSON Schema.
 
 ## Features
 
-- **Fluent API**: Chain validation rules naturally
-- **HTML5 Constraints**: Required, min/max length, pattern matching
-- **Numeric Validation**: Min/max values, integer checks
-- **Format Validation**: Email, URL patterns
-- **Custom Rules**: Add your own validation logic
-- **Rich Error Messages**: Detailed error information with field names
+- **Fluent API** - Chain validation rules naturally
+- **HTML5 Constraints** - Required, min/max length, pattern matching
+- **Numeric Validation** - Min/max values, integer checks
+- **Format Validation** - Email, URL, alpha, alphanumeric
+- **Custom Rules** - Add your own validation logic
+- **Rich Error Messages** - Detailed error information with field names
+- **Design by Contract** - Full preconditions/postconditions
 
 ## Installation
 
-Add to your ECF file:
+Add to your ECF:
 
 ```xml
-<library name="simple_validation" location="$SIMPLE_VALIDATION/simple_validation.ecf"/>
+<library name="simple_validation" location="$SIMPLE_VALIDATION\simple_validation.ecf"/>
 ```
 
-Set the environment variable:
+Set environment variable:
 ```
-export SIMPLE_VALIDATION=/path/to/simple_validation
+SIMPLE_VALIDATION=D:\prod\simple_validation
 ```
 
-## Quick Start
+## Usage
+
+### Basic Validation
 
 ```eiffel
 local
@@ -33,7 +42,6 @@ local
 do
     create validator.make
 
-    -- Validate an email
     result := validator.required.email.for_field ("email").validate ("user@example.com")
 
     if result.is_valid then
@@ -44,52 +52,28 @@ do
 end
 ```
 
-## API Reference
-
-### String Validation
+### Chaining Rules
 
 ```eiffel
--- Required (non-empty)
-validator.required
+local
+    validator: SIMPLE_VALIDATOR
+    result: VALIDATION_RESULT
+do
+    create validator.make
 
--- Length constraints
-validator.min_length (5)
-validator.max_length (100)
-validator.length_between (5, 100)
-
--- Pattern matching
-validator.pattern ("^[A-Z]+$")
-
--- Predefined formats
-validator.email
-validator.url
-validator.alpha
-validator.alpha_numeric
-```
-
-### Numeric Validation
-
-```eiffel
--- Value constraints
-validator.min_value (0.0)
-validator.max_value (100.0)
-validator.value_between (0.0, 100.0)
-
--- Integer check
-validator.is_integer
+    -- Username: 3-20 chars, alphanumeric
+    result := validator.required
+        .length_between (3, 20)
+        .alpha_numeric
+        .for_field ("username")
+        .validate ("john_doe123")
+end
 ```
 
 ### Custom Messages
 
 ```eiffel
 validator.required.with_message ("This field cannot be empty")
-```
-
-### Field Names
-
-```eiffel
--- Adds field name to error messages
-validator.required.for_field ("username")
 ```
 
 ### Custom Rules
@@ -103,82 +87,41 @@ my_validation_function (value: STRING): BOOLEAN
     end
 ```
 
-## Validation Result
+## API Reference
 
-```eiffel
-result: VALIDATION_RESULT
+### String Validation
 
--- Check validity
-if result.is_valid then ... end
-if result.has_errors then ... end
+| Rule | Description |
+|------|-------------|
+| `required` | Value must not be empty |
+| `min_length (n)` | Minimum character count |
+| `max_length (n)` | Maximum character count |
+| `length_between (min, max)` | Length within range |
+| `pattern (regex)` | Match regular expression |
 
--- Access errors
-across result.errors as err loop
-    io.put_string (err.full_message + "%N")
-end
+### Format Validation
 
--- Merge results
-result.merge (other_result)
-```
+| Rule | Description |
+|------|-------------|
+| `email` | Valid email format |
+| `url` | Valid URL format |
+| `alpha` | Letters only (A-Za-z) |
+| `alpha_numeric` | Letters and digits only |
 
-## Error Structure
+### Numeric Validation
 
-Each `VALIDATION_ERROR` contains:
-- `code`: Error type (e.g., "required", "min_length")
-- `message`: Human-readable message
-- `field_name`: Optional field name
-- `constraint`: The constraint that failed
-- `actual_value`: The value that failed validation
-
-## Example: Form Validation
-
-```eiffel
-validate_user_form (username, email, age: STRING): VALIDATION_RESULT
-    local
-        v1, v2, v3: SIMPLE_VALIDATOR
-        r1, r2, r3: VALIDATION_RESULT
-    do
-        create Result.make_valid
-
-        -- Username: 3-20 chars, alphanumeric
-        create v1.make
-        r1 := v1.required.length_between (3, 20).alpha_numeric
-            .for_field ("username").validate (username)
-        Result.merge (r1)
-
-        -- Email: required, valid format
-        create v2.make
-        r2 := v2.required.email.for_field ("email").validate (email)
-        Result.merge (r2)
-
-        -- Age: required, integer, 18-120
-        create v3.make
-        r3 := v3.required.is_integer.value_between (18.0, 120.0)
-            .for_field ("age").validate (age)
-        Result.merge (r3)
-    end
-```
-
-## Tests
-
-Run the test suite:
-```bash
-ec -config simple_validation.ecf -target simple_validation_tests -c_compile
-./EIFGENs/simple_validation_tests/W_code/simple_validation.exe
-```
-
-**49 tests** covering all validation rules and error handling.
+| Rule | Description |
+|------|-------------|
+| `min_value (n)` | Minimum numeric value |
+| `max_value (n)` | Maximum numeric value |
+| `value_between (min, max)` | Value within range |
+| `is_integer` | Must be a whole number |
 
 ## Dependencies
 
 - EiffelBase
 - Gobo Regexp (for pattern matching)
-- testing_ext (for tests)
 
 ## License
 
-MIT License - See LICENSE file for details.
-
-## Author
-
-Larry Rix
+MIT License - Copyright (c) 2024-2025, Larry Rix

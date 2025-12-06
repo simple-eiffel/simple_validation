@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPLE_VALIDATOR API Reference</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/png" href="../images/logo.png">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="../images/logo.png" alt="simple_* logo" class="logo">
+        </div>
+        <h1>SIMPLE_VALIDATOR</h1>
+        <p class="tagline">API Reference</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="#string">String Rules</a></li>
+            <li><a href="#format">Format Rules</a></li>
+            <li><a href="#numeric">Numeric Rules</a></li>
+            <li><a href="#result">Validation Result</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section>
+            <h2>Class Overview</h2>
+            <p>
+                <code>SIMPLE_VALIDATOR</code> provides a fluent API for building validation rule chains.
+                Each rule returns <code>Current</code> allowing natural chaining syntax.
+            </p>
+
+            <div class="api-section">
+                <h3>Creation</h3>
+                <div class="signature">create validator.make</div>
+                <p>Initialize the validator with no rules.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: no_rules: rules.is_empty</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="string">
+            <h2>String Validation Rules</h2>
+
+            <div class="api-section">
+                <h3>required: SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.required</div>
+                <p>Add rule requiring non-empty value.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                    <div class="ensure">ensure: returns_current: Result = Current</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>min_length (a_min: INTEGER): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.min_length (5)</div>
+                <p>Add minimum length constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: positive_min: a_min >= 0</div>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>max_length (a_max: INTEGER): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.max_length (100)</div>
+                <p>Add maximum length constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: positive_max: a_max >= 0</div>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>length_between (a_min, a_max: INTEGER): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.length_between (5, 100)</div>
+                <p>Add length range constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: valid_range: a_min >= 0 and a_max >= a_min</div>
+                    <div class="ensure">ensure: rules_added: rules.count = old rules.count + 2</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>pattern (a_regex: STRING): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.pattern ("^[A-Z]+$")</div>
+                <p>Add regular expression pattern constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: pattern_not_void: a_regex /= Void</div>
+                    <div class="require">require: pattern_not_empty: not a_regex.is_empty</div>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="format">
+            <h2>Format Validation Rules</h2>
+
+            <div class="api-section">
+                <h3>email: SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.email</div>
+                <p>Add email format validation.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>url: SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.url</div>
+                <p>Add URL format validation.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>alpha: SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.alpha</div>
+                <p>Add letters-only validation (A-Za-z).</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>alpha_numeric: SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.alpha_numeric</div>
+                <p>Add letters and digits validation.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="numeric">
+            <h2>Numeric Validation Rules</h2>
+
+            <div class="api-section">
+                <h3>min_value (a_min: REAL_64): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.min_value (0.0)</div>
+                <p>Add minimum numeric value constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>max_value (a_max: REAL_64): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.max_value (100.0)</div>
+                <p>Add maximum numeric value constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>value_between (a_min, a_max: REAL_64): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.value_between (0.0, 100.0)</div>
+                <p>Add numeric range constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: valid_range: a_max >= a_min</div>
+                    <div class="ensure">ensure: rules_added: rules.count = old rules.count + 2</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>is_integer: SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.is_integer</div>
+                <p>Add integer (whole number) constraint.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="execution">
+            <h2>Execution Features</h2>
+
+            <div class="api-section">
+                <h3>for_field (a_name: STRING): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.for_field ("username")</div>
+                <p>Set field name for error messages.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: name_not_void: a_name /= Void</div>
+                    <div class="ensure">ensure: field_set: field_name ~ a_name</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>with_message (a_message: STRING): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.required.with_message ("This field cannot be empty")</div>
+                <p>Set custom error message for last rule.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: message_not_void: a_message /= Void</div>
+                    <div class="require">require: has_rules: not rules.is_empty</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>validate (a_value: STRING): VALIDATION_RESULT</h3>
+                <div class="signature">result := validator.validate ("test value")</div>
+                <p>Execute all rules against value and return result.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: value_not_void: a_value /= Void</div>
+                    <div class="ensure">ensure: result_not_void: Result /= Void</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>custom (a_function: FUNCTION [STRING, BOOLEAN]): SIMPLE_VALIDATOR</h3>
+                <div class="signature">validator.custom (agent my_validator)</div>
+                <p>Add custom validation function.</p>
+                <div class="contracts">
+                    <h4>Contracts</h4>
+                    <div class="require">require: function_not_void: a_function /= Void</div>
+                    <div class="ensure">ensure: rule_added: rules.count = old rules.count + 1</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="result">
+            <h2>VALIDATION_RESULT Class</h2>
+
+            <div class="api-section">
+                <h3>is_valid: BOOLEAN</h3>
+                <div class="signature">if result.is_valid then ...</div>
+                <p>True if no validation errors.</p>
+            </div>
+
+            <div class="api-section">
+                <h3>has_errors: BOOLEAN</h3>
+                <div class="signature">if result.has_errors then ...</div>
+                <p>True if validation errors exist.</p>
+            </div>
+
+            <div class="api-section">
+                <h3>errors: LIST [VALIDATION_ERROR]</h3>
+                <div class="signature">across result.errors as err loop ... end</div>
+                <p>Access list of validation errors.</p>
+            </div>
+
+            <div class="api-section">
+                <h3>merge (other: VALIDATION_RESULT)</h3>
+                <div class="signature">result.merge (other_result)</div>
+                <p>Combine errors from another result.</p>
+            </div>
+
+            <div class="api-section">
+                <h3>to_string: STRING</h3>
+                <div class="signature">io.put_string (result.to_string)</div>
+                <p>Get all error messages as formatted string.</p>
+            </div>
+        </section>
+
+        <section id="error">
+            <h2>VALIDATION_ERROR Class</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>code</code></td>
+                        <td>STRING</td>
+                        <td>Error type (e.g., "required", "min_length")</td>
+                    </tr>
+                    <tr>
+                        <td><code>message</code></td>
+                        <td>STRING</td>
+                        <td>Human-readable error message</td>
+                    </tr>
+                    <tr>
+                        <td><code>field_name</code></td>
+                        <td>detachable STRING</td>
+                        <td>Field name if set</td>
+                    </tr>
+                    <tr>
+                        <td><code>constraint</code></td>
+                        <td>detachable ANY</td>
+                        <td>The constraint that failed</td>
+                    </tr>
+                    <tr>
+                        <td><code>actual_value</code></td>
+                        <td>detachable STRING</td>
+                        <td>The value that failed</td>
+                    </tr>
+                    <tr>
+                        <td><code>full_message</code></td>
+                        <td>STRING</td>
+                        <td>Complete message with field name</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>
+            <a href="../index.html">&larr; Back to simple_validation</a>
+        </p>
+        <p class="copyright">
+            Copyright &copy; 2024-2025 Larry Rix. MIT License.
+        </p>
+    </footer>
+</body>
+</html>
