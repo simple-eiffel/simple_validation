@@ -4,7 +4,7 @@
 
 # simple_validation
 
-**[Documentation](https://ljr1981.github.io/simple_validation/)**
+**[Documentation](https://simple-eiffel.github.io/simple_validation/)**
 
 Fluent data validation library for Eiffel with chainable rules inspired by HTML5 Constraint Validation API and JSON Schema.
 
