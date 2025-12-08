@@ -3,7 +3,7 @@ note
 	author: "Larry Rix"
 	date: "$Date$"
 	revision: "$Revision$"
-	testing: "type/manual"
+	testing: "covers"
 
 class
 	VALIDATION_TEST_SET
