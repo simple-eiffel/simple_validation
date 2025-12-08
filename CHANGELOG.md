@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Testing config updates, AutoTest fixes, .gitignore cleanup
+- Migrate to simple_testing library
+- Remove redundant result_not_void postconditions
+- Add documentation site with API reference
+- Initial commit: simple_validation library
+
 ## [1.0.0] - 2025-12-08
 
 ### Added
