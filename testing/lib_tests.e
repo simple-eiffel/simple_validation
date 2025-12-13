@@ -6,7 +6,7 @@ note
 	testing: "covers"
 
 class
-	VALIDATION_TEST_SET
+	LIB_TESTS
 
 inherit
 	TEST_SET_BASE
