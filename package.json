@@ -1,0 +1,9 @@
+{
+  "name": "simple_validation",
+  "version": "0.1.0",
+  "description": "Simple Validation Library - Fluent Data Validation for Eiffel",
+  "author": "Larry Rix",
+  "license": "MIT",
+  "category": "utilities",
+  "keywords": ["validation", "rules", "constraints"]
+}
