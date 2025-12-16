@@ -20,15 +20,15 @@ Fluent data validation library for Eiffel with chainable rules inspired by HTML5
 
 ## Installation
 
+Set the ecosystem environment variable (one-time setup for all simple_* libraries):
+```
+SIMPLE_EIFFEL=D:\prod
+```
+
 Add to your ECF:
 
 ```xml
-<library name="simple_validation" location="$SIMPLE_VALIDATION\simple_validation.ecf"/>
-```
-
-Set environment variable:
-```
-SIMPLE_VALIDATION=D:\prod\simple_validation
+<library name="simple_validation" location="$SIMPLE_EIFFEL/simple_validation/simple_validation.ecf"/>
 ```
 
 ## Quick Start (Zero-Configuration)
