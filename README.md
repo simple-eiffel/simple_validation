@@ -31,7 +31,50 @@ Set environment variable:
 SIMPLE_VALIDATION=D:\prod\simple_validation
 ```
 
-## Usage
+## Quick Start (Zero-Configuration)
+
+Use `SIMPLE_VALIDATION_QUICK` for the simplest possible validation:
+
+```eiffel
+local
+    v: SIMPLE_VALIDATION_QUICK
+do
+    create v.make
+
+    -- One-liner validators that return BOOLEAN
+    if v.email ("user@example.com") then ...
+    if v.url ("https://example.com") then ...
+    if v.required (input) then ...
+    if v.not_blank (input) then ...
+
+    -- Length validation
+    if v.min_length (input, 3) then ...
+    if v.max_length (input, 20) then ...
+    if v.length_ok (input, 3, 20) then ...
+
+    -- Format validators
+    if v.alpha (input) then ...           -- letters only
+    if v.alphanumeric (input) then ...    -- letters and digits
+    if v.numeric (input) then ...         -- digits only
+    if v.is_integer (input) then ...
+    if v.is_number (input) then ...
+
+    -- Numeric range
+    if v.in_range (age, 18, 65) then ...
+    if v.positive (count) then ...
+
+    -- Comparison
+    if v.equals (password, confirm_password) then ...
+    if v.one_of (status, <<"active", "pending", "closed">>) then ...
+
+    -- Error message from last failed validation
+    if not v.email (input) then
+        print ("Error: " + v.last_error)
+    end
+end
+```
+
+## Standard API (Full Control)
 
 ### Basic Validation
 

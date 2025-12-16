@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPLE_VALIDATION_QUICK - Zero-Configuration Validation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="simple_* logo" class="logo">
+        </div>
+        <h1>SIMPLE_VALIDATION_QUICK</h1>
+        <p class="tagline">Zero-Configuration Validation for Beginners</p>
+        <div class="badges">
+            <span class="badge badge-version">v1.0.0</span>
+            <span class="badge badge-license">MIT</span>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#api">API Reference</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>
+                <strong>SIMPLE_VALIDATION_QUICK</strong> provides one-liner validators that return BOOLEAN.
+                Perfect for quick input validation without complex setup.
+            </p>
+            <p>For fluent chainable validation rules, use SIMPLE_VALIDATOR directly.</p>
+        </section>
+
+        <section id="quick-start">
+            <h2>Quick Start</h2>
+<pre><code><span class="keyword">local</span>
+    v: <span class="type">SIMPLE_VALIDATION_QUICK</span>
+<span class="keyword">do</span>
+    <span class="keyword">create</span> v.make
+
+    <span class="comment">-- One-liner validators that return BOOLEAN</span>
+    <span class="keyword">if</span> v.email (<span class="string">"user@example.com"</span>) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.url (<span class="string">"https://example.com"</span>) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.required (input) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.not_blank (input) <span class="keyword">then</span> ...
+
+    <span class="comment">-- Length validation</span>
+    <span class="keyword">if</span> v.min_length (input, 3) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.max_length (input, 20) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.length_ok (input, 3, 20) <span class="keyword">then</span> ...
+
+    <span class="comment">-- Format validators</span>
+    <span class="keyword">if</span> v.alpha (input) <span class="keyword">then</span> ...           <span class="comment">-- letters only</span>
+    <span class="keyword">if</span> v.alphanumeric (input) <span class="keyword">then</span> ...    <span class="comment">-- letters and digits</span>
+    <span class="keyword">if</span> v.numeric (input) <span class="keyword">then</span> ...         <span class="comment">-- digits only</span>
+    <span class="keyword">if</span> v.is_integer (input) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.is_number (input) <span class="keyword">then</span> ...
+
+    <span class="comment">-- Numeric range</span>
+    <span class="keyword">if</span> v.in_range (age, 18, 65) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.positive (count) <span class="keyword">then</span> ...
+
+    <span class="comment">-- Comparison</span>
+    <span class="keyword">if</span> v.equals (password, confirm_password) <span class="keyword">then</span> ...
+    <span class="keyword">if</span> v.one_of (status, &lt;&lt;<span class="string">"active"</span>, <span class="string">"pending"</span>, <span class="string">"closed"</span>&gt;&gt;) <span class="keyword">then</span> ...
+
+    <span class="comment">-- Error message from last failed validation</span>
+    <span class="keyword">if</span> <span class="keyword">not</span> v.email (input) <span class="keyword">then</span>
+        print (<span class="string">"Error: "</span> + v.last_error)
+    <span class="keyword">end</span>
+<span class="keyword">end</span></code></pre>
+        </section>
+
+        <section id="api">
+            <h2>API Reference</h2>
+
+            <h3>Format Validators</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>email (value)</code></td><td>Valid email format?</td></tr>
+                <tr><td><code>url (value)</code></td><td>Valid URL format?</td></tr>
+                <tr><td><code>alpha (value)</code></td><td>Letters only (A-Za-z)?</td></tr>
+                <tr><td><code>alphanumeric (value)</code></td><td>Letters and digits only?</td></tr>
+                <tr><td><code>numeric (value)</code></td><td>Digits only?</td></tr>
+            </table>
+
+            <h3>Presence Validators</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>required (value)</code></td><td>Not empty?</td></tr>
+                <tr><td><code>not_blank (value)</code></td><td>Not blank (has non-whitespace)?</td></tr>
+            </table>
+
+            <h3>Length Validators</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>min_length (value, n)</code></td><td>At least n characters?</td></tr>
+                <tr><td><code>max_length (value, n)</code></td><td>At most n characters?</td></tr>
+                <tr><td><code>length_ok (value, min, max)</code></td><td>Between min and max?</td></tr>
+            </table>
+
+            <h3>Numeric Validators</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>is_integer (value)</code></td><td>Valid integer string?</td></tr>
+                <tr><td><code>is_number (value)</code></td><td>Valid number string?</td></tr>
+                <tr><td><code>in_range (n, min, max)</code></td><td>Number in range?</td></tr>
+                <tr><td><code>positive (n)</code></td><td>Greater than zero?</td></tr>
+            </table>
+
+            <h3>Comparison Validators</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>equals (a, b)</code></td><td>Values equal?</td></tr>
+                <tr><td><code>one_of (value, options)</code></td><td>Value in list?</td></tr>
+            </table>
+
+            <h3>Error Handling</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>last_error</code></td><td>Error message from last failed validation</td></tr>
+                <tr><td><code>has_error</code></td><td>Did last validation fail?</td></tr>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Part of the <a href="https://github.com/simple-eiffel">Simple Eiffel</a> ecosystem</p>
+    </footer>
+</body>
+</html>
