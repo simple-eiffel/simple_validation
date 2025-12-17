@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 			-- Create quick validation facade.
 		do
 			create validator.make
-			create logger.make ("validation_quick")
+			create logger.make
 			last_error := ""
 		ensure
 			validator_exists: validator /= Void
