@@ -69,8 +69,8 @@ feature -- Access
 			-- List of all error messages.
 		do
 			create Result.make (errors.count)
-			across errors as err loop
-				Result.extend (err.full_message)
+			across errors as ic_err loop
+				Result.extend (ic_err.full_message)
 			end
 		ensure
 			same_count: Result.count = errors.count
@@ -105,8 +105,8 @@ feature -- Modification
 		require
 			other_not_void: other /= Void
 		do
-			across other.errors as err loop
-				add_error (err)
+			across other.errors as ic_err loop
+				add_error (ic_err)
 			end
 		ensure
 			errors_added: errors.count >= old errors.count
@@ -123,11 +123,11 @@ feature -- Conversion
 			else
 				create Result.make (100)
 				Result.append ("Invalid: ")
-				across error_messages as msg loop
+				across error_messages as ic_msg loop
 					if not Result.ends_with (": ") then
 						Result.append ("; ")
 					end
-					Result.append (msg)
+					Result.append (ic_msg)
 				end
 			end
 		end

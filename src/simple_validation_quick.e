@@ -310,8 +310,8 @@ feature -- Comparison Validators
 			value_not_void: a_value /= Void
 			options_not_empty: a_options.count > 0
 		do
-			across a_options as opt loop
-				if a_value.same_string (opt) then
+			across a_options as ic_opt loop
+				if a_value.same_string (ic_opt) then
 					Result := True
 				end
 			end
@@ -332,21 +332,21 @@ feature -- Composite Validation
 		do
 			create l_errors.make (a_validations.count)
 			Result := True
-			across a_validations as v loop
-				if not v.valid then
+			across a_validations as ic_v loop
+				if not ic_v.valid then
 					Result := False
-					l_errors.extend (v.name + ": " + v.error)
+					l_errors.extend (ic_v.name + ": " + ic_v.error)
 				end
 			end
 			if l_errors.is_empty then
 				last_error := ""
 			else
 				create last_error.make_empty
-				across l_errors as e loop
+				across l_errors as ic_e loop
 					if not last_error.is_empty then
 						last_error.append ("; ")
 					end
-					last_error.append (e)
+					last_error.append (ic_e)
 				end
 			end
 		end

@@ -248,8 +248,8 @@ feature -- Validation
 			l_rule: TUPLE [rule_type: INTEGER; constraint: detachable ANY]
 		do
 			create Result.make_valid
-			across rules as rule loop
-				l_rule := rule
+			across rules as ic_rule loop
+				l_rule := ic_rule
 				l_error := validate_rule (l_rule.rule_type, l_rule.constraint, value)
 				if l_error /= Void then
 					if not field_name.is_empty then
@@ -517,18 +517,18 @@ feature {NONE} -- Rule Validators
 			choices_str: STRING
 		do
 			if str_value /= Void then
-				across choices as c loop
-					if c.same_string (str_value) then
+				across choices as ic_c loop
+					if ic_c.same_string (str_value) then
 						found := True
 					end
 				end
 				if not found then
 					create choices_str.make (50)
-					across choices as c loop
+					across choices as ic_c loop
 						if not choices_str.is_empty then
 							choices_str.append (", ")
 						end
-						choices_str.append (c)
+						choices_str.append (ic_c)
 					end
 					create Result.make ("one_of", "Must be one of: " + choices_str)
 					Result.set_constraint (choices)
