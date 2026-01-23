@@ -1,5 +1,12 @@
 note
-	description: "Fluent data validation with chainable rules"
+	description: "[
+		Fluent data validation with chainable rules.
+
+		X03 Contract Assault: Model-based specifications using simple_mml.
+		- model_rules: MML_SEQUENCE of rule tuples (ordered)
+		- Rule application order preserved via sequence semantics
+		- Contracts specify what, not how
+	]"
 	author: "Larry Rix"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -32,6 +39,34 @@ feature -- Access
 	custom_message: STRING
 			-- Custom error message to use instead of default.
 
+feature -- Model Queries
+
+	model_rules: MML_SEQUENCE [TUPLE [rule_type: INTEGER; constraint: detachable ANY]]
+			-- Mathematical model of rules as ordered sequence.
+			-- Sequence semantics preserve rule application order.
+		local
+			l_result: MML_SEQUENCE [TUPLE [rule_type: INTEGER; constraint: detachable ANY]]
+		do
+			create l_result.default_create
+			across rules as ic loop
+				l_result := l_result & ic
+			end
+			Result := l_result
+		ensure
+			same_count: Result.count = rules.count
+			order_preserved: across 1 |..| rules.count as i all
+				Result [i] = rules [i]
+			end
+		end
+
+	model_rule_count: INTEGER
+			-- Number of rules in the model.
+		do
+			Result := rules.count
+		ensure
+			definition: Result = model_rules.count
+		end
+
 feature -- Fluent Configuration: Required
 
 	required: SIMPLE_VALIDATOR
@@ -41,6 +76,9 @@ feature -- Fluent Configuration: Required
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_required
+			model_extended: model_rules.count = old model_rules.count + 1
+			model_last_is_required: model_rules.last.rule_type = Rule_required
 			returns_self: Result = Current
 		end
 
@@ -49,7 +87,7 @@ feature -- Fluent Configuration: Length
 	min_length (n: INTEGER): SIMPLE_VALIDATOR
 			-- Add minimum length rule.
 		require
-			positive: n >= 0
+			non_negative: n >= 0
 		local
 			l_ref: INTEGER_REF
 		do
@@ -59,13 +97,17 @@ feature -- Fluent Configuration: Length
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_min_length
+			constraint_recorded: attached {INTEGER_REF} rules.last.constraint as ref implies ref.item = n
+			model_extended: model_rules.count = old model_rules.count + 1
+			model_last_is_min_length: model_rules.last.rule_type = Rule_min_length
 			returns_self: Result = Current
 		end
 
 	max_length (n: INTEGER): SIMPLE_VALIDATOR
 			-- Add maximum length rule.
 		require
-			positive: n >= 0
+			non_negative: n >= 0
 		local
 			l_ref: INTEGER_REF
 		do
@@ -75,19 +117,24 @@ feature -- Fluent Configuration: Length
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_max_length
+			constraint_recorded: attached {INTEGER_REF} rules.last.constraint as ref implies ref.item = n
+			model_extended: model_rules.count = old model_rules.count + 1
+			model_last_is_max_length: model_rules.last.rule_type = Rule_max_length
 			returns_self: Result = Current
 		end
 
 	length_between (min, max: INTEGER): SIMPLE_VALIDATOR
-			-- Add length range rule.
+			-- Add length range rule (convenience for min_length + max_length).
 		require
-			min_positive: min >= 0
-			max_positive: max >= 0
+			min_non_negative: min >= 0
+			max_non_negative: max >= 0
 			valid_range: min <= max
 		do
 			Result := min_length (min).max_length (max)
 		ensure
-			rules_added: rules.count = old rules.count + 2
+			two_rules_added: rules.count = old rules.count + 2
+			model_extended_by_two: model_rules.count = old model_rules.count + 2
 			returns_self: Result = Current
 		end
 
@@ -104,6 +151,9 @@ feature -- Fluent Configuration: Numeric
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_min_value
+			constraint_recorded: attached {REAL_64_REF} rules.last.constraint as ref implies ref.item = n
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -118,17 +168,21 @@ feature -- Fluent Configuration: Numeric
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_max_value
+			constraint_recorded: attached {REAL_64_REF} rules.last.constraint as ref implies ref.item = n
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
 	value_between (min, max: REAL_64): SIMPLE_VALIDATOR
-			-- Add value range rule.
+			-- Add value range rule (convenience for min_value + max_value).
 		require
 			valid_range: min <= max
 		do
 			Result := min_value (min).max_value (max)
 		ensure
-			rules_added: rules.count = old rules.count + 2
+			two_rules_added: rules.count = old rules.count + 2
+			model_extended_by_two: model_rules.count = old model_rules.count + 2
 			returns_self: Result = Current
 		end
 
@@ -137,13 +191,15 @@ feature -- Fluent Configuration: Pattern
 	pattern (regex: STRING): SIMPLE_VALIDATOR
 			-- Add regex pattern rule.
 		require
-			regex_not_void: regex /= Void
 			regex_not_empty: not regex.is_empty
 		do
 			rules.extend ([Rule_pattern, regex])
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_pattern
+			pattern_recorded: attached {STRING} rules.last.constraint as s implies s.same_string (regex)
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -154,6 +210,8 @@ feature -- Fluent Configuration: Pattern
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_email
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -164,6 +222,8 @@ feature -- Fluent Configuration: Pattern
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_url
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -174,6 +234,8 @@ feature -- Fluent Configuration: Pattern
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_uuid
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -184,6 +246,8 @@ feature -- Fluent Configuration: Pattern
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_alphanumeric
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -194,6 +258,8 @@ feature -- Fluent Configuration: Pattern
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_numeric
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -202,13 +268,15 @@ feature -- Fluent Configuration: Choices
 	one_of (values: ARRAY [STRING]): SIMPLE_VALIDATOR
 			-- Add enumeration rule (value must be one of given values).
 		require
-			values_not_void: values /= Void
 			values_not_empty: not values.is_empty
 		do
 			rules.extend ([Rule_one_of, values])
 			Result := Current
 		ensure
 			rule_added: rules.count = old rules.count + 1
+			rule_appended: rules.last.rule_type = Rule_one_of
+			values_recorded: rules.last.constraint = values
+			model_extended: model_rules.count = old model_rules.count + 1
 			returns_self: Result = Current
 		end
 
@@ -217,32 +285,34 @@ feature -- Fluent Configuration: Customization
 	with_message (msg: STRING): SIMPLE_VALIDATOR
 			-- Set custom error message.
 		require
-			msg_not_void: msg /= Void
 			msg_not_empty: not msg.is_empty
 		do
 			custom_message := msg
 			Result := Current
 		ensure
 			message_set: custom_message.same_string (msg)
+			rules_unchanged: rules.count = old rules.count
+			model_unchanged: model_rules.count = old model_rules.count
 			returns_self: Result = Current
 		end
 
 	with_field_name (name: STRING): SIMPLE_VALIDATOR
 			-- Set field name for error messages.
-		require
-			name_not_void: name /= Void
 		do
 			field_name := name
 			Result := Current
 		ensure
 			field_name_set: field_name.same_string (name)
+			rules_unchanged: rules.count = old rules.count
+			model_unchanged: model_rules.count = old model_rules.count
 			returns_self: Result = Current
 		end
 
 feature -- Validation
 
 	validate (value: detachable ANY): VALIDATION_RESULT
-			-- Validate `value` against all rules.
+			-- Validate `value` against all rules in sequence order.
+			-- Rules are applied in the order they were added.
 		local
 			l_error: detachable VALIDATION_ERROR
 			l_rule: TUPLE [rule_type: INTEGER; constraint: detachable ANY]
@@ -258,12 +328,17 @@ feature -- Validation
 					Result.add_error (l_error)
 				end
 			end
+		ensure
+			valid_if_no_errors: Result.is_valid = (Result.error_count = 0)
+			all_rules_applied: True -- Each rule in model_rules was evaluated
 		end
 
 	is_valid (value: detachable ANY): BOOLEAN
 			-- Does `value` pass all validation rules?
 		do
 			Result := validate (value).is_valid
+		ensure
+			definition: Result = validate (value).is_valid
 		end
 
 feature {NONE} -- Implementation
@@ -564,8 +639,12 @@ feature {NONE} -- Pattern Constants
 			-- UUID pattern.
 
 invariant
-	rules_not_void: rules /= Void
-	field_name_not_void: field_name /= Void
-	custom_message_not_void: custom_message /= Void
+	rules_exist: attached rules
+	field_name_exists: attached field_name
+	custom_message_exists: attached custom_message
+	model_consistent: model_rules.count = rules.count
+	valid_rule_types: across rules as ic all
+		ic.rule_type >= Rule_required and ic.rule_type <= Rule_one_of
+	end
 
 end

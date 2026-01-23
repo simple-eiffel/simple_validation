@@ -1,5 +1,11 @@
 note
-	description: "Represents a single validation error with actionable details"
+	description: "[
+		Represents a single validation error with actionable details.
+
+		X03 Contract Assault: Strengthened contracts.
+		- All string attributes guaranteed non-empty where required
+		- Constraint and actual_value enable detailed diagnostics
+	]"
 	author: "Larry Rix"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -15,9 +21,7 @@ feature {NONE} -- Initialization
 	make (a_code: STRING; a_message: STRING)
 			-- Create error with `a_code` and `a_message`.
 		require
-			code_not_void: a_code /= Void
 			code_not_empty: not a_code.is_empty
-			message_not_void: a_message /= Void
 			message_not_empty: not a_message.is_empty
 		do
 			code := a_code
@@ -26,6 +30,9 @@ feature {NONE} -- Initialization
 		ensure
 			code_set: code.same_string (a_code)
 			message_set: message.same_string (a_message)
+			field_name_empty: field_name.is_empty
+			no_constraint: constraint = Void
+			no_actual_value: actual_value = Void
 		end
 
 feature -- Access
@@ -49,22 +56,22 @@ feature -- Modification
 
 	set_field_name (a_name: STRING)
 			-- Set field name to `a_name`.
-		require
-			name_not_void: a_name /= Void
 		do
 			field_name := a_name
 		ensure
 			field_name_set: field_name.same_string (a_name)
+			code_unchanged: code.same_string (old code.twin)
+			message_unchanged: message.same_string (old message.twin)
 		end
 
 	set_constraint (a_constraint: ANY)
 			-- Set constraint value.
-		require
-			constraint_not_void: a_constraint /= Void
 		do
 			constraint := a_constraint
 		ensure
 			constraint_set: constraint = a_constraint
+			code_unchanged: code.same_string (old code.twin)
+			message_unchanged: message.same_string (old message.twin)
 		end
 
 	set_actual_value (a_value: detachable ANY)
@@ -73,6 +80,8 @@ feature -- Modification
 			actual_value := a_value
 		ensure
 			actual_value_set: actual_value = a_value
+			code_unchanged: code.same_string (old code.twin)
+			message_unchanged: message.same_string (old message.twin)
 		end
 
 feature -- Output
@@ -87,13 +96,15 @@ feature -- Output
 			end
 		ensure
 			result_not_empty: not Result.is_empty
+			contains_message: Result.has_substring (message)
+			has_field_prefix: not field_name.is_empty implies Result.starts_with (field_name)
 		end
 
 invariant
-	code_not_void: code /= Void
+	code_exists: attached code
 	code_not_empty: not code.is_empty
-	message_not_void: message /= Void
+	message_exists: attached message
 	message_not_empty: not message.is_empty
-	field_name_not_void: field_name /= Void
+	field_name_exists: attached field_name
 
 end
